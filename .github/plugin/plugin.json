@@ -1,0 +1,21 @@
+{
+  "name": "convert-word-to-md",
+  "description": "Converts Word (.docx) documents into Markdown for analysis, summarization, and extraction.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Willie Yao",
+    "url": "https://github.com/1YaoWei0"
+  },
+  "repository": "https://github.com/1YaoWei0/convert-word-to-md",
+  "license": "MIT",
+  "keywords": [
+    "convert-word-to-md",
+    "copilot",
+    "agents",
+    "skills",
+    "configuration"
+  ],
+  "skills": [
+    "./skills/convert-word-to-md"
+  ]
+}
