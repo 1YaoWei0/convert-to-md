@@ -1,6 +1,6 @@
 ---
 name: convert-word-to-md
-description: Converts Word (.docx) documents into Markdown so their contents can be accurately analyzed, summarized, searched, or extracted from. Use this skill whenever the user shares, references, or asks about a .docx file — even if they don't say "convert" or "markdown" explicitly. This includes requests to "read", "summarize", "review", "extract data from", "compare", or "analyze" a Word document, resume, report, contract, or proposal. Always run the bundled conversion script to produce Markdown first; do not attempt to parse .docx content directly or write ad-hoc conversion code. Also use this skill for batch requests involving a whole folder of Word documents.
+description: 'Converts Word (.docx) documents into Markdown so their contents can be accurately analyzed, summarized, searched, or extracted from. Use this skill whenever the user shares, references, or asks about a .docx file — even if they don''t say "convert" or "markdown" explicitly. This includes requests to "read", "summarize", "review", "extract data from", "compare", or "analyze" a Word document, resume, report, contract, or proposal. Always run the bundled conversion script to produce Markdown first; do not attempt to parse .docx content directly or write ad-hoc conversion code. Also use this skill for batch requests involving a whole folder of Word documents. IMPORTANT: When the user references a folder or set of documents containing multiple file types (.pdf, .docx, .xlsx), invoke ALL three sibling skills — convert-pdf-to-md, convert-word-to-md, and convert-excel-to-md — so no file type is silently skipped.'
 ---
 
 # Convert Word to Markdown
@@ -19,6 +19,16 @@ This skill only supports `.docx`. If asked to convert a legacy `.doc` file,
 tell the user it isn't supported and ask them to re-save it as `.docx`
 (Word: File > Save As > Word Document (.docx)) first.
 
+**Mixed file types:** When the user references a folder or set of documents
+containing multiple supported file types (`.pdf`, `.docx`, `.xlsx`), this
+skill handles only `.docx` files. The agent MUST also invoke the sibling
+skills in parallel:
+- `convert-pdf-to-md` for any `.pdf` files
+- `convert-excel-to-md` for any `.xlsx` files
+
+Never process a folder and silently skip a supported file type. All three
+skills must be invoked together when mixed types are present.
+
 ## Setup (once per environment)
 
 Before the first conversion in a given environment, follow
@@ -33,8 +43,8 @@ reasonably confident setup was already done.
 
 The conversion script lives at `scripts/convert_word_to_md.py`.
 
-**Output structure:** MarkItDown embeds images as a truncated placeholder
-(`![alt](data:image/png;base64...)`), NOT real image data, so the script
+**Output structure:** MarkItDown embeds images as a truncated `data:image/png;base64...` URI
+placeholder (not real image data), so the script
 extracts real images directly from the `.docx` and writes a self-contained
 folder per document instead of a single loose `.md` file:
 
@@ -52,7 +62,13 @@ If the document has no embedded images, no `img/` folder is created.
 **Single file:**
 
 ```powershell
+# Windows
 python scripts\convert_word_to_md.py "C:\path\to\document.docx"
+```
+
+```bash
+# macOS / Linux
+python scripts/convert_word_to_md.py "/path/to/document.docx"
 ```
 
 This creates a `document\` folder next to the source file (containing
@@ -86,16 +102,20 @@ Markdown (and images), not to interpret the content.
 
 ## Deciding where output goes
 
-There's no single fixed output location — decide based on context:
-- If the user doesn't say where they want the output, default to creating
-  the `<name>\` folder next to the source file (the script's default
-  behavior) — this is the least surprising choice and keeps things easy to
-  find.
-- If the user mentions a specific output location, a working directory, or
-  asks for a consolidated set of results, use `-o` to place it there.
-- For batch/folder requests, prefer `-o` pointing at a single parent
-  directory if the user seems to want the results gathered in one place;
-  otherwise let each `<name>\` folder land next to its source `.docx`.
+**Default — always output next to the source file.** The `<name>/` folder
+is created in the same directory as the source `.docx`. This is the required
+default for every case. Do NOT override it unless the user explicitly asks
+for a different location.
+
+**Only use `-o` when** the user explicitly provides an output path (e.g.,
+"save the output to `C:\output`", "put the results in `D:\work`"). Do NOT
+pass `-o` based on the agent's current working directory, the session state
+folder, or any implied location.
+
+**If the source file path cannot be fully resolved** — for example, the
+user provides only a filename with no directory, or the path is ambiguous —
+use `ask_user` to confirm the full absolute path before running the
+conversion. Never guess or assume the directory.
 
 ## Troubleshooting
 

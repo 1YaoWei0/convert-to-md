@@ -13,7 +13,7 @@ python --version
 - If this fails (command not found), install Python 3.10 or newer:
   - Windows: `winget install --id Python.Python.3.12 -e`
   - macOS: `brew install python@3.12`
-  - Linux (Debian/Ubuntu): `sudo apt-get update && sudo apt-get install -y python3 python3-pip`
+  - Linux (Debian/Ubuntu): `sudo apt-get update && sudo apt-get install -y python3 python3-pip python-is-python3`
 - If the reported version is older than 3.10, install a newer Python using
   the same command above (MarkItDown requires 3.10+).
 
@@ -31,16 +31,16 @@ python -m ensurepip --upgrade
 
 ## 3. Install MarkItDown with Word (.docx) support
 
-```powershell
-python -m pip install "markitdown[docx]"
-```
-
-Use the `scripts/requirements.txt` file bundled with this skill for a pinned
-install instead, if preferred:
+Use the `scripts/requirements.txt` file bundled with this skill to install a pinned,
+known-good version of the dependency:
 
 ```powershell
-python -m pip install -r requirements.txt
+python -m pip install -r scripts/requirements.txt
 ```
+
+This pulls in `markitdown[docx]` (MarkItDown's Word conversion dependency, which
+includes `mammoth` for `.docx` file parsing). No extra package is needed — this
+skill's script uses MarkItDown's built-in Word converter.
 
 ## 4. Verify the install
 

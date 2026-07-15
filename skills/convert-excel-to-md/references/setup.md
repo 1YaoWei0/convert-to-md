@@ -13,7 +13,7 @@ python --version
 - If this fails (command not found), install Python 3.10 or newer:
   - Windows: `winget install --id Python.Python.3.12 -e`
   - macOS: `brew install python@3.12`
-  - Linux (Debian/Ubuntu): `sudo apt-get update && sudo apt-get install -y python3 python3-pip`
+  - Linux (Debian/Ubuntu): `sudo apt-get update && sudo apt-get install -y python3 python3-pip python-is-python3`
 - If the reported version is older than 3.10, install a newer Python using
   the same command above (MarkItDown requires 3.10+).
 
@@ -31,19 +31,15 @@ python -m ensurepip --upgrade
 
 ## 3. Install MarkItDown with Excel (.xlsx) support
 
-```powershell
-python -m pip install "markitdown[xlsx]"
-```
-
-Use the `scripts/requirements.txt` file bundled with this skill for a pinned
-install instead, if preferred:
+Use the `scripts/requirements.txt` file bundled with this skill to install a pinned,
+known-good version of the dependency:
 
 ```powershell
-python -m pip install -r requirements.txt
+python -m pip install -r scripts/requirements.txt
 ```
 
-This pulls in `pandas` and `openpyxl` (MarkItDown's XLSX table conversion
-dependencies). No extra package is needed for image extraction — this
+This pulls in `markitdown[xlsx]` (MarkItDown's XLSX table conversion
+dependencies, which include `pandas` and `openpyxl`). No extra package is needed for image extraction — this
 skill's script reads embedded images directly from the `.xlsx` zip
 structure using Python's built-in `zipfile` and `xml` modules.
 

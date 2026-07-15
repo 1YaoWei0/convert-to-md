@@ -1,7 +1,7 @@
 {
   "name": "convert-to-md",
   "description": "Converts Word (.docx), Excel (.xlsx), and PDF (.pdf) documents into Markdown for analysis, summarization, and extraction.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": {
     "name": "Willie Yao",
     "url": "https://github.com/1YaoWei0"
